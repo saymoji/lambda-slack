@@ -3,76 +3,74 @@
 const url = require('url');
 const https = require('https');
 
-const webhook = process.env.SLACK_WEBHOOK;
+const hookUrl = process.env.SLACK_HOOK_URL;
 
-const processEvent = function (event, context) {
-    const message = JSON.parse(event.Records[0].Sns.Message);
-
-    // Format Slack posting message
-    const text = "<!channel> *" + message.AlarmDescription + "* state is now `" + message.NewStateValue + "`\n" +
-        "```" +
-        "reason: " + message.NewStateReason + "\n" +
-        "alarm: " + message.AlarmName + "\n" +
-        "time: " + message.StateChangeTime +
-        "```"
-    ;
-
-    const slackMessage = {
-        text: text
-    };
-
-    postMessage(slackMessage, function (response) {
-        if (response.statusCode < 400) {
-            console.info('Message posted!');
-            context.succeed();
-        } else if (response.statusCode < 500) {
-            // Don't retry when got 4xx cuz its request error
-            console.error("4xx error occurred when processing message: " + response.statusCode + " - " + response.statusMessage);
-            context.succeed();
-        } else {
-            // Retry Lambda func when got 5xx errors
-            context.fail("Server error when processing message: " + response.statusCode + " - " + response.statusMessage);
-        }
-    });
-};
-
-const postMessage = function (message, callback) {
+function postMessage(message, callback) {
     const body = JSON.stringify(message);
-
-    const options = url.parse(webhook);
+    const options = url.parse(hookUrl);
     options.method = 'POST';
     options.headers = {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(body)
+        'Content-Length': Buffer.byteLength(body),
     };
 
-    const req = https.request(options, function (res) {
+    const postReq = https.request(options, (res) => {
         const chunks = [];
         res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            return chunks.push(chunk);
-        });
-        res.on('end', function () {
-            let body = chunks.join('');
+        res.on('data', (chunk) => chunks.push(chunk));
+        res.on('end', () => {
             if (callback) {
                 callback({
-                    body: body,
+                    body: chunks.join(''),
                     statusCode: res.statusCode,
-                    statusMessage: res.statusMessage
+                    statusMessage: res.statusMessage,
                 });
             }
         });
         return res;
     });
 
-    req.write(body);
-    req.end();
-};
+    postReq.write(body);
+    postReq.end();
+}
 
-exports.handler = function (event, context) {
-    if (webhook) {
-        processEvent(event, context);
+function processEvent(event, callback) {
+    const message = JSON.parse(event.Records[0].Sns.Message);
+
+    const alarmName = message.AlarmName;
+    const newState = message.NewStateValue;
+    const reason = message.NewStateReason;
+
+    // const text = "<!channel> *" + message.AlarmDescription + "* state is now `" + message.NewStateValue + "`\n" +
+    //     "```" +
+    //     "reason: " + message.NewStateReason + "\n" +
+    //     "alarm: " + message.AlarmName + "\n" +
+    //     "time: " + message.StateChangeTime +
+    //     "```"
+    // ;
+
+    const slackMessage = {
+        text: `${alarmName} state is now ${newState}: ${reason}`,
+    };
+
+    postMessage(slackMessage, (response) => {
+        if (response.statusCode < 400) {
+            console.info('Message posted successfully');
+            callback(null);
+        } else if (response.statusCode < 500) {
+            console.error(`Error posting message to Slack API: ${response.statusCode} - ${response.statusMessage}`);
+            callback(null);  // Don't retry because the error is due to a problem with the request
+        } else {
+            // Let Lambda retry
+            callback(`Server error when processing message: ${response.statusCode} - ${response.statusMessage}`);
+        }
+    });
+}
+
+exports.handler = (event, context, callback) => {
+    if (hookUrl) {
+        processEvent(event, callback);
     } else {
-        context.fail('Missing Slack Hook URL.');
+        callback('Hook URL has not been set.');
     }
 };
