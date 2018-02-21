@@ -37,20 +37,14 @@ function postMessage(message, callback) {
 function processEvent(event, callback) {
     const message = JSON.parse(event.Records[0].Sns.Message);
 
-    const alarmName = message.AlarmName;
-    const newState = message.NewStateValue;
-    const reason = message.NewStateReason;
-
-    // const text = "<!channel> *" + message.AlarmDescription + "* state is now `" + message.NewStateValue + "`\n" +
-    //     "```" +
-    //     "reason: " + message.NewStateReason + "\n" +
-    //     "alarm: " + message.AlarmName + "\n" +
-    //     "time: " + message.StateChangeTime +
-    //     "```"
-    // ;
+    const text = "<!channel> *" + message.AlarmName + "* state is now `" + message.NewStateValue + "`\n" +
+        "```" +
+        "reason: " + message.NewStateReason + "\n" +
+        "```"
+    ;
 
     const slackMessage = {
-        text: `${alarmName} state is now ${newState}: ${reason}`,
+        text: text,
     };
 
     postMessage(slackMessage, (response) => {
