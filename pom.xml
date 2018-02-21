@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.nalbam</groupId>
-    <artifactId>nalbam-lambda-slack</artifactId>
+    <artifactId>lambda-slack</artifactId>
     <version>0.0.0</version>
     <packaging>zip</packaging>
 
-    <name>nalbam-lambda-slack</name>
+    <name>lambda-slack</name>
     <url>http://slack.nalbam.com</url>
 
 </project>
