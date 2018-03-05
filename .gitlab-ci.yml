@@ -2,6 +2,7 @@
 
 stages:
   - build
+  - releases
   - deploy
 
 before_script:
@@ -17,12 +18,25 @@ build:
     paths:
       - target/
 
-deploy:
-  stage: deploy
+releases:
+  stage: releases
   image: python:latest
   script:
     - pip install awscli
-    - ~/toaster/toast.sh deploy lambda slack
+    - ~/toaster/toast.sh releases bucket
+  artifacts:
+    paths:
+      - target/
+
+deploy:
+  stage: deploy
+  image: python:latest
+  when: manual
+  only:
+    - master
+  script:
+    - pip install awscli
+    - ~/toaster/toast.sh deploy lambda dev-slack
 
 after_script:
   - ls -alh target
