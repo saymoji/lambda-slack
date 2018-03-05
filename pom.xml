@@ -9,6 +9,6 @@
     <packaging>zip</packaging>
 
     <name>lambda-slack</name>
-    <url>http://slack.nalbam.com</url>
+    <url>http://slack-api.nalbam.com</url>
 
 </project>
