@@ -62,6 +62,8 @@ function processEvent(event, callback) {
 }
 
 exports.handler = (event, context, callback) => {
+    console.log('## handler event : ', JSON.stringify(event, null, 2));
+
     if (hookUrl) {
         processEvent(event, callback);
     } else {

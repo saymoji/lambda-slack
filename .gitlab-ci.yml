@@ -31,12 +31,11 @@ releases:
 deploy:
   stage: deploy
   image: python:latest
-  when: manual
   only:
     - master
   script:
     - pip install awscli
-    - ~/toaster/toast.sh deploy lambda dev-slack
+    - ~/toaster/toast.sh deploy lambda slack-dev
 
 after_script:
   - ls -alh target
