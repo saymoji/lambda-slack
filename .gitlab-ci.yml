@@ -20,9 +20,8 @@ build:
 
 release:
   stage: release
-  image: python:latest
+  image: nalbam/builder:awscli
   script:
-    - pip install awscli
     - ~/toaster/toast.sh release bucket
   artifacts:
     paths:
@@ -30,11 +29,10 @@ release:
 
 deploy:
   stage: deploy
-  image: python:latest
+  image: nalbam/builder:awscli
   only:
     - master
   script:
-    - pip install awscli
     - ~/toaster/toast.sh deploy lambda slack-dev
 
 after_script:
