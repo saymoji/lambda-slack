@@ -27,6 +27,7 @@ jobs:
       - attach_workspace:
           at: /work/target
       - checkout
+      - run: aws configure set default.region ap-northeast-2
       - run: aws s3 cp /work/target/lambda.zip s3://${BUCKET}/lambda/${S3_KEY}.zip
       - run: aws lambda update-function-code --function-name ${S3_KEY} --s3-bucket ${BUCKET} --s3-key lambda/${S3_KEY}.zip
 
