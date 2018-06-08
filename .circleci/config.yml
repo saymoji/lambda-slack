@@ -27,7 +27,7 @@ jobs:
       - attach_workspace:
           at: ~/work/target
       - checkout
-      - run: aws s3 cp lambda.zip s3://${BUCKET}/lambda/${S3_KEY}.zip
+      - run: aws s3 cp target/lambda.zip s3://${BUCKET}/lambda/${S3_KEY}.zip
       - run: aws lambda update-function-code --function-name ${S3_KEY} --s3-bucket ${BUCKET} --s3-key lambda/${S3_KEY}.zip
 
 workflows:
