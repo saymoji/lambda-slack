@@ -6,7 +6,7 @@ jobs:
   build:
     docker:
       - image: nalbam/builder:node
-    working_directory: ~/work
+    working_directory: /work
     steps:
       - checkout
       - run: mkdir -p target
@@ -16,7 +16,7 @@ jobs:
           paths:
             - lambda.zip
       - store_artifacts:
-          path: ~/work/target/lambda.zip
+          path: /work/target/lambda.zip
   deploy:
     docker:
       - image: nalbam/builder:python
@@ -25,9 +25,9 @@ jobs:
       S3_KEY: "slack-dev"
     steps:
       - attach_workspace:
-          at: ~/work/target
+          at: /work/target
       - checkout
-      - run: aws s3 cp target/lambda.zip s3://${BUCKET}/lambda/${S3_KEY}.zip
+      - run: aws s3 cp /work/target/lambda.zip s3://${BUCKET}/lambda/${S3_KEY}.zip
       - run: aws lambda update-function-code --function-name ${S3_KEY} --s3-bucket ${BUCKET} --s3-key lambda/${S3_KEY}.zip
 
 workflows:
