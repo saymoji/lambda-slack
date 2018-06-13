@@ -11,11 +11,11 @@ variable stage {
 }
 
 variable domain {
-  default = "saymoji.com"
+  default = "nalbam.com"
 }
 
 variable s3_bucket {
-  default = "repo.saymoji.com"
+  default = "repo.nalbam.com"
 }
 
 variable version {
