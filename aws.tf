@@ -7,7 +7,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     region = "ap-northeast-2"
-    bucket = "terraform-nalbam-seoul"
+    bucket = "terraform-me01-seoul"
     key = "demo-slack.tfstate"
   }
 }
