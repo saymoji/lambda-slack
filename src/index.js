@@ -37,11 +37,8 @@ function postMessage(message, callback) {
 function processEvent(event, callback) {
     const message = JSON.parse(event.Records[0].Sns.Message);
 
-    const text = "<!channel> *" + message.AlarmName + "* state is now `" + message.NewStateValue + "`\n" +
-        "```" +
-        "reason: " + message.NewStateReason + "\n" +
-        "```"
-    ;
+    const text = `<!channel> *${message.AlarmName}* state is now \`${message.NewStateValue}\`\n
+                reason: \`\`\`${message.NewStateReason}\`\`\``;
 
     const slackMessage = {
         text: text,
