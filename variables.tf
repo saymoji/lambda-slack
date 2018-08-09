@@ -3,7 +3,7 @@ variable region {
 }
 
 variable name {
-  default = "demo-slack"
+  default = "slack"
 }
 
 variable stage {
