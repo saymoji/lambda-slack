@@ -6,7 +6,7 @@ module "demo-slack" {
 
   name        = "${var.name}"
   stage       = "${var.stage}"
-  description = "sns > ${var.name} > slack"
+  description = "sns > lambda > ${var.name}"
   runtime     = "nodejs8.10"
   handler     = "index.handler"
   memory_size = 512
