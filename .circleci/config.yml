@@ -5,7 +5,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: nalbam/builder:node
+      - image: circleci/node:10
     steps:
       - checkout
       - run: mkdir -p target
